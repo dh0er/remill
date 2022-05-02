@@ -126,8 +126,8 @@ DEF_FPU_SEM(FLD, RF80W, T src1) {
   // Quietize if signaling NaN.
   if (state.sw.ie) {
 
-#if defined(__x86_64__) || defined(__i386__) || defined(_M_X86)
-// On non-x86 architectures, native_float80_t is defined as a double (float64_t)
+#if !defined(_MSC_VER) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
+// On Windows and non-x86 architectures, native_float80_t is defined as a double (float64_t)
 // On x86, it is a long double (80-bit of native representation).
 // Handle these separate cases.
     static_assert(sizeof(native_float80_t) >= sizeof(nan80_t), "Float/NaN size mismatch");
@@ -225,7 +225,7 @@ DEF_FPU_SEM(DoFCHS) {
   return memory;
 }
 
-#if defined(__x86_64__) || defined(__i386__) || defined(_M_X86)
+#if !defined(_MSC_VER) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
 #define __builtin_fmod_f80 __builtin_fmodl
 #define __builtin_remainder_f80 __builtin_remainderl
 #else

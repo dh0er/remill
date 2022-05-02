@@ -72,8 +72,9 @@ typedef long double float128_t;
 
 // A "native_float80_t" is a native type that is closes to approximating
 // an x86 80-bit float.
-// when building against CUDA, default to 64-bit float80s
-#if !defined(__CUDACC__) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
+// when building on Windows or against CUDA, default to 64-bit float80s
+#if !defined(_MSC_VER) && !defined(__CUDACC__) && \
+    (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
   #if defined(__float80)
   typedef __float80 native_float80_t;
   #else
@@ -89,8 +90,9 @@ static const int kEightyBitsInBytes = 10;
 union union_ld {
   struct {
     uint8_t data[kEightyBitsInBytes];
-    // when building against CUDA, default to 64-bit float80s
-#if !defined(__CUDACC__) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
+    // when building on Windows or against CUDA, default to 64-bit float80s
+#if !defined(_MSC_VER) && !defined(__CUDACC__) && \
+    (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
     // We are doing x86 on x86, so we have native x86 FP80s, but they
     // are not available in raw 80-bit native form.
     //
@@ -167,8 +169,8 @@ union nan80_t {
     uint64_t payload : 62;
     uint64_t  is_quiet_nan : 1;
     uint64_t  interger_bit : 1;
-    uint64_t exponent : 15;
-    uint64_t is_negative : 1;
+    uint16_t exponent : 15;
+    uint16_t is_negative : 1;
   } __attribute__((packed));
 } __attribute__((packed));
 

@@ -590,8 +590,8 @@ ALWAYS_INLINE bool issignaling(float64_t x) {
 }
 
 ALWAYS_INLINE bool issignaling(float80_t x) {
-#if defined(__x86_64__) || defined(__i386__) || defined(_M_X86)
-// On non-x86 architectures, native_float80_t is defined as a double,
+#if !defined(_MSC_VER) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
+// On Windows and non-x86 architectures, native_float80_t is defined as a double,
 // which is identical to the float64_t definition above
   const nan80_t x_nan = {x};
   return x_nan.exponent == 0x7FFFU && !x_nan.is_quiet_nan && x_nan.payload && x_nan.interger_bit;
@@ -680,8 +680,8 @@ ALWAYS_INLINE static bool IsSignalingNaN(float64_t x) {
 }
 
 ALWAYS_INLINE static bool IsSignalingNaN(float80_t x) {
-#if defined(__x86_64__) || defined(__i386__) || defined(_M_X86)
-// On non-x86 architectures, native_float80_t is defined as a double,
+#if !defined(_MSC_VER) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
+// On Windows and non-x86 architectures, native_float80_t is defined as a double,
 // which is identical to the float64_t definition above
   const nan80_t x_nan = {x};
   return x_nan.exponent == 0x7FFFU && !x_nan.is_quiet_nan && x_nan.payload && x_nan.interger_bit;
@@ -712,8 +712,8 @@ ALWAYS_INLINE static uint8_t IsDenormal(float80_t x) {
   return static_cast<uint8_t>(FP_SUBNORMAL == std::fpclassify(static_cast<native_float80_t>(x)));
 }
 
-#if defined(__x86_64__) || defined(__i386__) || defined(_M_X86)
-// On non-x86 architectures, native_float80_t is defined as a double,
+#if !defined(_MSC_VER) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
+// On Windows and non-x86 architectures, native_float80_t is defined as a double,
 // which is identical to the float64_t definition above
 ALWAYS_INLINE static uint8_t IsDenormal(native_float80_t x) {
   return static_cast<uint8_t>(FP_SUBNORMAL == std::fpclassify(static_cast<native_float80_t>(x)));
@@ -1556,7 +1556,7 @@ MAKE_BUILTIN(CountTrailingZeros, 64, 64, __builtin_ctzll, 0)
     return intrinsic_name(val); \
   }
 
-#if defined(__x86_64__) || defined(__i386__) || defined(_M_X86)
+#if !defined(_MSC_VER) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
 #define MAKE_BUILTIN(name, intrinsic_name) \
   MAKE_BUILTIN_INTRINSIC(name, intrinsic_name##f, 32, float32_t) \
   MAKE_BUILTIN_INTRINSIC(name, intrinsic_name, 64, float64_t) \
